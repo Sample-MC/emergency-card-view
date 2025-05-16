@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Emergency Medical Card Viewer</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 10px; background: #f9f9f9; }
+  #card { max-width: 400px; margin: 10px auto; padding: 15px; border: 2px solid #000; background: #fff; }
+  h2 { text-align: center; border: 2px solid red; color: red; padding: 5px; margin: 0 0 10px 0; font-weight: bold; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  td { padding: 4px 8px; border: 1px solid #ddd; }
+  .label { font-weight: bold; width: 40%; background: #f0f0f0; }
+  #photo { width: 100px; height: 120px; background: #ccc; margin: 0 auto 10px auto; display: block; object-fit: cover; border: 1px solid #000; }
+  #scanBtn { display: block; width: 100%; padding: 10px; font-size: 18px; margin: 15px 0; background: #007bff; color: white; border: none; border-radius: 5px; }
+  #video { width: 100%; max-width: 400px; border: 1px solid #ccc; display: none; margin: 10px auto; }
+  #msg { text-align:center; color: red; }
+  #footer { font-size: 12px; margin-top: 15px; background: #d4f1e4; padding: 10px; text-align:center; border-radius: 5px; }
+</style>
+</head>
+<body>
+
+<h2>EMERGENCY MEDICAL CARD</h2>
+
+<button id="scanBtn">Scan QR Code</button>
+<video id="video" autoplay></video>
+<p id="msg"></p>
+
+<div id="card" style="display:none;">
+  <img id="photo" src="" alt="Photo" onerror="this.style.display='none'"/>
+  <table>
+    <tr><td class="label">Name</td><td id="name"></td><td id="designation" style="text-align:right"></td></tr>
+    <tr><td class="label">Company</td><td colspan="2" id="company"></td></tr>
+    <tr><td class="label">EID No</td><td id="eid"></td><td id="gender_age" style="text-align:right"></td></tr>
+    <tr><td class="label">Street Address</td><td colspan="2" id="address"></td></tr>
+    <tr><td class="label">Nationality</td><td id="nationality"></td><td id="dob_rel" style="text-align:right"></td></tr>
+    <tr><td class="label">Contact No</td><td id="contact"></td><td id="relation" style="text-align:right"></td></tr>
+  </table>
+  <hr />
+  <table>
+    <tr><td class="label">Blood Group</td><td id="blood_group"></td><td class="label">Height</td><td id="height"></td></tr>
+    <tr><td class="label">Weight</td><td id="weight"></td><td class="label">Waist Size</td><td id="waist_size"></td></tr>
+    <tr><td class="label">Blood Sugar</td><td id="blood_sugar"></td><td class="label">Blood Pressure</td><td id="blood_pressure"></td></tr>
+  </table>
+  <div id="footer">
+    Creating a mentally healthy workplace begins with recognizing everyone's struggle,<br>even if it’s not visible.
+  </div>
+</div>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script>
+  const scanBtn = document.getElementById('scanBtn');
+  const videoElem = document.getElementById('video');
+  const msg = document.getElementById('msg');
+  const card = document.getElementById('card');
+
+  function showCard(data) {
+    try {
+      const obj = typeof data === 'string' ? JSON.parse(data) : data;
+      card.style.display = 'block';
+      msg.textContent = '';
+      videoElem.style.display = 'none';
+
+      document.getElementById('photo').src = obj.photo || '';
+      document.getElementById('name').textContent = obj.name || '';
+      document.getElementById('designation').textContent = obj.designation || '';
+      document.getElementById('company').textContent = obj.company || '';
+      document.getElementById('eid').textContent = obj.eid || '';
+      document.getElementById('gender_age').textContent = (obj.gender || '') + (obj.age ? (' / ' + obj.age) : '');
+      document.getElementById('address').textContent = obj.address || '';
+      document.getElementById('nationality').textContent = obj.nationality || '';
+      document.getElementById('dob_rel').textContent = (obj.dob ? 'DOB: ' + obj.dob : '') + (obj.relation_name ? (' / ' + obj.relation_name) : '');
+      document.getElementById('contact').textContent = obj.contact || '';
+      document.getElementById('relation').textContent = obj.relation_phone || '';
+      document.getElementById('blood_group').textContent = obj.blood_group || '';
+      document.getElementById('height').textContent = obj.height || '';
+      document.getElementById('weight').textContent = obj.weight || '';
+      document.getElementById('waist_size').textContent = obj.waist_size || '';
+      document.getElementById('blood_sugar').textContent = obj.blood_sugar || '';
+      document.getElementById('blood_pressure').textContent = obj.blood_pressure || '';
+    } catch(e) {
+      msg.textContent = 'Invalid data format in QR code.';
+      card.style.display = 'none';
+    }
+  }
+
+  // Show card
